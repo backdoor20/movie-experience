@@ -35,10 +35,10 @@ public class MovieCatalogResource {
 		 * List<Rating> ratings=Arrays.asList(new Rating("1234", 4), new Rating("5678",
 		 * 3));
 		 */
-		 UserRating ratings=restTemplate.getForObject("http://localhost:8083/ratingdata/users/"+userId, UserRating.class);
+		 UserRating ratings=restTemplate.getForObject("http://rating-data-service/ratingdata/users/"+userId, UserRating.class);
 		
 		return ratings.getUserRating().stream().map(rating -> {
-			Movie movie=restTemplate.getForObject("http://localhost:8082/movies/"+rating.getMovieId(), Movie.class);
+			Movie movie=restTemplate.getForObject("http://movie-info-service/movies/"+rating.getMovieId(), Movie.class);
 			return new CatalogItem(movie.getMovieName(), "Description for Movie", rating.getRating());
 		}).collect(Collectors.toList());
 		//return Collections.singletonList(new CatalogItem("Pk", "Movie by amir khan", 4));
