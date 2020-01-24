@@ -16,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import io.backdoor20.models.CatalogItem;
 import io.backdoor20.models.Movie;
 import io.backdoor20.models.Rating;
+import io.backdoor20.models.UserRating;
 
 @RestController
 @RequestMapping("/catalog")
@@ -30,22 +31,24 @@ public class MovieCatalogResource {
 	
 	@RequestMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable String userId){
-		List<Rating> ratings=Arrays.asList(new Rating("1234", 4),
-				new Rating("5678", 3));
+		/*
+		 * List<Rating> ratings=Arrays.asList(new Rating("1234", 4), new Rating("5678",
+		 * 3));
+		 */
+		 UserRating ratings=restTemplate.getForObject("http://localhost:8083/ratingdata/users/"+userId, UserRating.class);
 		
-		return ratings.stream().map(rating -> {
-			//Movie movie=restTemplate.getForObject("http://localhost:8082/movies/"+rating.getMovieId(), Movie.class);
-			
-			Movie movie=webClientBuilder.build()
-			.get()
-			.uri("http://localhost:8082/movies/"+rating.getMovieId())
-			.retrieve()
-			.bodyToMono(Movie.class)
-			.block();
-		
-			
+		return ratings.getUserRating().stream().map(rating -> {
+			Movie movie=restTemplate.getForObject("http://localhost:8082/movies/"+rating.getMovieId(), Movie.class);
 			return new CatalogItem(movie.getMovieName(), "Description for Movie", rating.getRating());
 		}).collect(Collectors.toList());
 		//return Collections.singletonList(new CatalogItem("Pk", "Movie by amir khan", 4));
 	}
 }
+
+
+/*Movie movie=webClientBuilder.build()
+.get()
+.uri("http://localhost:8082/movies/"+rating.getMovieId())
+.retrieve()
+.bodyToMono(Movie.class)
+.block();*/

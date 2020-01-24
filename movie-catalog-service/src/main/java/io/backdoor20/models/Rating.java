@@ -21,6 +21,9 @@ public class Rating {
 		this.movieId = movieId;
 		this.rating = rating;
 	}
+	public Rating() {
+		super();
+	}
 	
 	
 }
